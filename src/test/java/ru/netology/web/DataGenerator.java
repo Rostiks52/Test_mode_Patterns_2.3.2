@@ -22,19 +22,19 @@ public class DataGenerator {
         private Authorization() {
         }
 
-        public static CustomerData generateAuthorizationActiveUsers() {
-            Faker faker = new Faker(new Locale("en"));
-            return new CustomerData(
-                    faker.name().username(),
-                    faker.internet().password(), "active");
-        }
-
-        public static CustomerData ganerateAuthorizationBlockedUsers() {
-            Faker faker = new Faker(new Locale("en"));
-            return new CustomerData(
-                    faker.name().username(),
-                    faker.internet().password(), "blocked");
-        }
+//        public static CustomerData generateAuthorizationActiveUsers() {
+//            Faker faker = new Faker(new Locale("en"));
+//            return new CustomerData(
+//                    faker.name().username(),
+//                    faker.internet().password(), "active");
+//        }
+//
+//        public static CustomerData generateAuthorizationBlockedUsers() {
+//            Faker faker = new Faker(new Locale("en"));
+//            return new CustomerData(
+//                    faker.name().username(),
+//                    faker.internet().password(), "blocked");
+//        }
 
         private static RequestSpecification requestSpec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
@@ -44,44 +44,35 @@ public class DataGenerator {
                 .log(LogDetail.ALL)
                 .build();
 
-        public static CustomerData registrationActiveUsers() {
-            CustomerData customerData = generateAuthorizationActiveUsers();
+        public static CustomerData registrationUsers(String status) {
+            CustomerData customerData = generateAuthorization("active");
             Gson gsonBuilder = new GsonBuilder().create();
-            String jsonCustomerData = gsonBuilder.toJson(customerData);
+            String CustomerData = gsonBuilder.toJson(customerData);
             given()
                     .spec(requestSpec)
-                    .body(jsonCustomerData)
+                    .body(CustomerData)
                     .when()
                     .post("/api/system/users")
                     .then()
                     .statusCode(200);
             return customerData;
         }
+public static CustomerData generateAuthorization(String status) {
+    Faker faker = new Faker(new Locale("en"));
+    return new CustomerData(wrongLogin(), wrongPassword(), status);
+}
 
-        public static CustomerData registrationBlockedUsers() {
-            CustomerData customerData = ganerateAuthorizationBlockedUsers();
-            Gson gsonBuilder = new GsonBuilder().create();
-            String jsonCustomerData = gsonBuilder.toJson(customerData);
-            given()
-                    .spec(requestSpec)
-                    .body(jsonCustomerData)
-                    .when()
-                    .post("/api/system/users")
-                    .then()
-                    .statusCode(200);
-            return customerData;
-        }
-
-        public static String wrongLogin() {
-            Faker faker = new Faker(new Locale("en"));
-            return faker.name().username();
-        }
-
-        public static String wrongPassword() {
+        private static String wrongPassword() {
             Faker faker = new Faker(new Locale("en"));
             return faker.internet().password();
         }
+
+        private static String wrongLogin() {
+            Faker faker = new Faker(new Locale("en"));
+            return faker.name().username();
+        }
     }
+
 
 
 
